@@ -1,0 +1,15 @@
+v0.0.8. Extension emulation works in Windows without a build environment.
+
+v0.0.7. Windows support.
+
+v0.0.6. Event Machine protocols for talking to zergling daemons.
+
+v0.0.5. Added forgotten spawn.rb to Manifest.
+
+v0.0.4. Polished implementation and tests for process spawning.
+
+v0.0.3. Preliminary implementation of process spawning.
+
+v0.0.2. Process management.
+
+v0.0.1. Initial release. Support code for zerg* gem installation.
