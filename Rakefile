@@ -3,7 +3,7 @@ gem 'echoe'
 require 'echoe'
 
 Echoe.new('zerg_support') do |p|
-  p.project = 'zerg-support' # rubyforge project
+  p.project = 'zerglings' # rubyforge project
   
   p.author = 'Victor Costan'
   p.email = 'victor@zergling.net'
