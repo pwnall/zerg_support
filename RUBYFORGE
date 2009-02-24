@@ -30,10 +30,10 @@ Releasing a new gemspec to Github
 rake package
 
 2) Copy the spec
-cp pkg/zerg_xcode-0.1/zerg_xcode.gemspec .
+cp pkg/zerg_support-*/zerg_support.gemspec .
 
 3) Commit the spec
-git add zerg_xcode.gemspec
+git add zerg_support.gemspec
 git commit -m "New gemspec, for Github distribution."
 
 4) Push to Github
