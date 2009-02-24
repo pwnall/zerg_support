@@ -11,6 +11,8 @@ LICENSE
 Manifest
 Rakefile
 README
+RUBYFORGE
+test/fork_tree.rb
 test/test_connection_mocks.rb
 test/test_frame_protocol.rb
 test/test_gems.rb

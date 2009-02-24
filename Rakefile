@@ -3,11 +3,11 @@ gem 'echoe'
 require 'echoe'
 
 Echoe.new('zerg_support') do |p|
-  p.project = 'rails-pwnage' # rubyforge project
+  p.project = 'zerg-support' # rubyforge project
   
   p.author = 'Victor Costan'
   p.email = 'victor@zergling.net'
-  p.summary = 'Support libraries used by the Zerg system.'
+  p.summary = 'Support libraries used by Zergling.Net deployment code.'
   p.url = 'http://www.zergling.net'
   
   p.need_tar_gz = !Platform.windows?
