@@ -54,7 +54,7 @@ module Zerg::Support::Process
   
   # Collects information about a single process. Returns nil 
   def self.process_info(pid)
-    pinfo = Sys::ProcTable.ps pid
+    pinfo = ps pid
     pinfo ? xlate_process_info(pinfo) : nil 
   end
   
@@ -66,9 +66,9 @@ module Zerg::Support::Process
     else
       begin
         if pids
-          ps_result = Sys::ProcTable.ps(pids)
+          ps_result = ps(pids)
         else
-          ps_result = Sys::ProcTable.ps
+          ps_result = ps
         end
         ps_result.map { |pinfo| xlate_process_info pinfo }
       rescue TypeError
@@ -151,16 +151,19 @@ begin
   
   require 'time'
   require 'sys/proctable'
+  
+  module Zerg::Support::Process
+    def self.ps(pid = nil)
+      Sys::ProcTable.ps pid
+    end
+  end 
 rescue Exception
   # Emulate the sys-proctable gem using the ps command.
   # This will be slower than having native syscalls, but at least it doesn't
   # crash ruby. (yes, sys-proctable 0.7.6, I mean you!)
-  
+    
   #:nodoc: all
-  module Sys; end
-  
-  #:nodoc: all
-  module Sys::ProcTable
+  module Zerg::Support::ProcTable
     class ProcInfo
       def initialize(pid, ppid, ruid, rgid, uid, gid, start, nice, rss, rssize,
                      text_size, vsz, user_time, total_time, pctcpu, pctmem,
@@ -213,4 +216,10 @@ rescue Exception
       return pids.length == 1 ? retval.first : retval
     end
   end
+  
+  module Zerg::Support::Process
+    def self.ps(pid = nil)
+      Zerg::Support::ProcTable.ps pid
+    end
+  end   
 end

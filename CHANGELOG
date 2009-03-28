@@ -1,3 +1,5 @@
+v0.0.9. Changed ProcTable wrapper to deal with API change in 0.8.0.
+
 v0.0.8. Extension emulation works in Windows without a build environment.
 
 v0.0.7. Windows support.
