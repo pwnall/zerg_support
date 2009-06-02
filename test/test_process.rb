@@ -4,6 +4,11 @@ require 'test/unit'
 require 'zerg_support'
 
 class TestProcess < Test::Unit::TestCase
+  def setup
+    super
+    Thread.abort_on_exception = true
+  end
+  
   def teardown
     @pid_files.each { |f| File.delete f rescue nil } if @pid_files
     super

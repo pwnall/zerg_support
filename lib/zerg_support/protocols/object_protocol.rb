@@ -1,7 +1,7 @@
 require 'yaml'
 
 #:nodoc: namespace
-module Zerg::Support::EventMachine
+module Zerg::Support::Protocols
 
 # Event Machine protocol for sending serializable objects.
 module ObjectProtocol
@@ -13,12 +13,12 @@ module ObjectProtocol
   end
   
   #:nodoc: Processes an incoming frame and de-serializes the object in it.
-  def receive_frame(frame_data)
-    receive_object YAML.load(frame_data)
+  def received_frame(frame_data)
+    received_object YAML.load(frame_data)
   end
   
   # Override to process incoming objects.
-  def receive_object(object); end
+  def received_object(object); end
 end
 
-end # namespace Zerg::Support::EventMachine
+end  # namespace Zerg::Support::Protocols

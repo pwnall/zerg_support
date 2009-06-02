@@ -3,13 +3,15 @@ require 'test/unit'
 require 'zerg_support'
 
 class ObjectProtocolTest < Test::Unit::TestCase
-  OP = Zerg::Support::EventMachine::ObjectProtocol
+  ProtocolAdapter = Zerg::Support::EventMachine::ProtocolAdapter
+  OP = Zerg::Support::Protocols::ObjectProtocol
+  OPAdapter = ProtocolAdapter.adapter_module OP
   
   class SendObjectMock < Zerg::Support::EventMachine::SendMock
-    include OP
+    include OPAdapter
   end
   class ReceiveObjectMock < Zerg::Support::EventMachine::ReceiveMock
-    include OP
+    include OPAdapter
     object_name :object
   end
   

@@ -127,11 +127,10 @@ module Zerg::Support::Process
       self.kill_primitive pid, false
       Thread.new(pid) do |victim_pid|
         Kernel.sleep 0.2
-        self.kill_primitive pid, true
+        self.kill_primitive(pid, true) rescue nil
       end
     rescue
       # we probably don't have the right to kill the process
-      print "#{$!.class.name}: #{$!}\n"
     end    
   end
   

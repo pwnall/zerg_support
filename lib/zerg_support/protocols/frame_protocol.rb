@@ -1,10 +1,10 @@
 #:nodoc: namespace
-module Zerg::Support::EventMachine
+module Zerg::Support::Protocols
   
-# Event Machine protocol for sending and receiving discrete-sized frames
-module FrameProtocol  
-  #:nodoc: This is called by Event Machine when TCP stream data is available.
-  def receive_data(data)
+# Protocol for sending and receiving discrete-sized frames over TCP streams.
+module FrameProtocol
+  # Called when data is available from the TCP stream.
+  def received_bytes(data)
     @frame_protocol_varsize ||= ''
 
     i = 0
@@ -22,7 +22,7 @@ module FrameProtocol
       return if @frame_protocol_buffer.nil?
       break if @frame_protocol_bytes_left > data.size - i
 
-      receive_frame @frame_protocol_buffer + data[i, @frame_protocol_bytes_left]
+      received_frame @frame_protocol_buffer + data[i, @frame_protocol_bytes_left]
       @frame_protocol_varsize, @frame_protocol_buffer = '', nil
       i += @frame_protocol_bytes_left
     end
@@ -32,14 +32,19 @@ module FrameProtocol
   end
   
   # Override to process incoming frames.
-  def receive_frame(frame_data); end
+  def received_frame(frame_data); end
 
-  # Sends a frame via the underlying Event Machine TCP stream.
+  # Sends a frame via the underlying TCP stream.
   def send_frame(frame_data)
-    encoded_length = FrameProtocol.encode_natural(frame_data.length)
-    send_data encoded_length + frame_data
+    send_bytes FrameProtocol.encode_frame(frame_data)
   end
   
+  # :nodoc: Encodes frame data into data to be sent across a TCP wire.
+  def self.encode_frame(frame_data)
+    encoded_length = FrameProtocol.encode_natural(frame_data.length)
+    encoded_length + frame_data
+  end
+
   #:nodoc: Encodes a natural (non-negative) integer into a string.
   def self.encode_natural(number)
     string = ''
@@ -65,4 +70,4 @@ module FrameProtocol
   end  
 end
 
-end # namespace Zerg::Support::EventMachine
+end  # namespace Zerg::Support::Protocols

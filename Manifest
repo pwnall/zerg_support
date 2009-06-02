@@ -1,10 +1,14 @@
 CHANGELOG
 lib/zerg_support/event_machine/connection_mocks.rb
-lib/zerg_support/event_machine/frame_protocol.rb
-lib/zerg_support/event_machine/object_protocol.rb
+lib/zerg_support/event_machine/protocol_adapter.rb
 lib/zerg_support/gems.rb
 lib/zerg_support/open_ssh.rb
 lib/zerg_support/process.rb
+lib/zerg_support/protocols/frame_protocol.rb
+lib/zerg_support/protocols/object_protocol.rb
+lib/zerg_support/socket_factory.rb
+lib/zerg_support/sockets/protocol_adapter.rb
+lib/zerg_support/sockets/socket_mocks.rb
 lib/zerg_support/spawn.rb
 lib/zerg_support.rb
 LICENSE
@@ -19,4 +23,5 @@ test/test_gems.rb
 test/test_object_protocol.rb
 test/test_open_ssh.rb
 test/test_process.rb
+test/test_socket_factory.rb
 test/test_spawn.rb

@@ -15,6 +15,7 @@ class TestSpawn < Test::Unit::TestCase
   
   def setup
     super
+    Thread.abort_on_exception = true
     @in_file = temp_file
     @out_file = temp_file
   end

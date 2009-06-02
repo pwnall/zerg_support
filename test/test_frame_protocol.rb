@@ -2,23 +2,12 @@ require 'zerg_support'
 
 require 'test/unit'
 
-class TestFrameProtocol < Test::Unit::TestCase
-  FP = Zerg::Support::EventMachine::FrameProtocol
-
-  # Send mock for frames.
-  class SendFramesMock < Zerg::Support::EventMachine::SendMock
-    include FP
-  end
-
-  # Receive mock for frames.
-  class ReceiveFramesMock < Zerg::Support::EventMachine::ReceiveMock
-    include FP
-    object_name :frame
-  end
+module FrameProtocolTestMethods
+  FP = Zerg::Support::Protocols::FrameProtocol
 
   def setup
     super
-    @send_mock = SendFramesMock.new
+    @send_mock = self.class::SendFramesMock.new    
   end
   
   def teardown
@@ -38,12 +27,13 @@ class TestFrameProtocol < Test::Unit::TestCase
       i += sublen
     end
     in_strings << in_string[i..-1] if i < in_string.length
-    out_frames = ReceiveFramesMock.new(@send_mock.string).replay.frames
+    out_frames =
+        self.class::ReceiveFramesMock.new(@send_mock.string).replay.frames
     assert_equal frames, out_frames
   end
 
   def test_empty_frame
-    continuous_data_test ['']    
+    continuous_data_test ['']
   end
   
   def test_byte_frame
@@ -88,7 +78,7 @@ class TestFrameProtocol < Test::Unit::TestCase
     ex_frames = [s2_frame] * s2_count
     
     # build cut points in a string
-    s2_points = [0, 1, 2, 3, 4, 5, 127, 128, 8190, 16381, 16382, 16383]
+    s2_points = [1, 2, 3, 4, 5, 127, 128, 8190, 16381, 16382, 16383]
     cut_points = []
     0.upto(s2_count - 1) do |i|
       cut_points += s2_points.map { |p| p + i * s2_string.length }
@@ -101,7 +91,8 @@ class TestFrameProtocol < Test::Unit::TestCase
           packets = [0...cut_points[i], cut_points[i]...cut_points[j],
                      cut_points[j]...cut_points[k], cut_points[k]..-1].
                     map { |r| send_string[r] }
-          assert_equal ex_frames, ReceiveFramesMock.new(packets).replay.frames
+          assert_equal ex_frames,
+              self.class::ReceiveFramesMock.new(packets).replay.frames
         end
       end
     end
@@ -115,5 +106,43 @@ class TestFrameProtocol < Test::Unit::TestCase
       assert_equal entry.last, FP.encode_natural(entry.first) 
       assert_equal entry.first, FP.decode_natural(entry.last) 
     end
+  end  
+end
+
+class FrameProtocolEventMachineTest < Test::Unit::TestCase
+  include FrameProtocolTestMethods
+  
+  ProtocolAdapter = Zerg::Support::EventMachine::ProtocolAdapter
+  FP = Zerg::Support::Protocols::FrameProtocol
+  FPAdapter = ProtocolAdapter.adapter_module FP
+  
+  # Send mock for frames.
+  class SendFramesMock < Zerg::Support::EventMachine::SendMock
+    include FPAdapter
+  end
+
+  # Receive mock for frames.
+  class ReceiveFramesMock < Zerg::Support::EventMachine::ReceiveMock
+    include FPAdapter
+    object_name :frame
+  end
+end
+
+class FrameProtocolSocketsTest < Test::Unit::TestCase
+  include FrameProtocolTestMethods
+  
+  ProtocolAdapter = Zerg::Support::Sockets::ProtocolAdapter
+  FP = Zerg::Support::Protocols::FrameProtocol
+  FPAdapter = ProtocolAdapter.adapter_module FP
+  
+  # Send mock for frames.
+  class SendFramesMock < Zerg::Support::Sockets::SendMock
+    include FPAdapter
+  end
+
+  # Receive mock for frames.
+  class ReceiveFramesMock < Zerg::Support::Sockets::ReceiveMock
+    include FPAdapter
+    object_name :frame
   end
 end
