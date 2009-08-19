@@ -8,7 +8,7 @@ Echoe.new('zerg_support') do |p|
   p.author = 'Victor Costan'
   p.email = 'victor@zergling.net'
   p.summary = 'Support libraries used by Zergling.Net deployment code.'
-  p.url = 'http://www.zergling.net'
+  p.url = 'http://github.com/costan/zerg_support'
   
   p.need_tar_gz = !Platform.windows?
   p.need_zip = !Platform.windows?

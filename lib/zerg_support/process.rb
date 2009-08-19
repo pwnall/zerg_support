@@ -164,14 +164,14 @@ rescue Exception
   #:nodoc: all
   module Zerg::Support::ProcTable
     class ProcInfo
-      def initialize(pid, ppid, ruid, rgid, uid, gid, start, nice, rss, rssize,
+      def initialize(pid, ppid, ruid, rgid, uid, gid, start, nice, rss,
                      text_size, vsz, user_time, total_time, pctcpu, pctmem,
                      priority, user_priority, state, cmdline)
         @pid, @ppid, @ruid, @rgid, @uid, @gid, @nice, @priority,
              @user_priority = *([pid, ppid, ruid, rgid, uid, gid, nice,
                                  priority, user_priority].map { |s| s.to_i })
         @start = Time.parse start
-        @ix_rss, @id_rss, @is_rss = text_size.to_f, rssize.to_f, vsz.to_f
+        @ix_rss, @id_rss, @is_rss = text_size.to_f, rss.to_f, vsz.to_f
         @pctcpu, @pctmem = *([pctcpu, pctmem].map { |s| s.to_f })
         @cmdline = cmdline
         
@@ -185,7 +185,7 @@ rescue Exception
 
     @@ps_root_cmdline = 'ps -o pid,ppid,ruid,rgid,uid,gid' +
                         ',lstart="STARTED_________________________________"' +
-                        ',nice,rss,rssize,tsiz,vsz,utime,cputime,pcpu="PCPU_"' +
+                        ',nice,rss,tsiz,vsz,utime,cputime,pcpu="PCPU_"' +
                         ',pmem="PMEM_",pri,usrpri,stat,command'
                         
     @@ps_all_cmdline = @@ps_root_cmdline + ' -A'
@@ -197,7 +197,7 @@ rescue Exception
       ps_cmdline = pids.empty? ? @@ps_all_cmdline :
                                  @@ps_some_cmdline + pids.join(',')
       ps_output = Kernel.` ps_cmdline
-      header_splits = nil
+      header_splits = nil      
       ps_output.each_line do |pline|
         if header_splits
           # result line, break it up

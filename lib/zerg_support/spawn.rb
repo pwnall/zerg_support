@@ -82,7 +82,7 @@ else
         # ruby1.9+: spawn!
         options = options.dup
         env = options.delete(:env)
-        Kernel.spawn *([env, binary] + args + [options])
+        Kernel.spawn(*([env, binary] + args + [options]))
       else
         # below 1.9: emulate
         
@@ -96,7 +96,7 @@ else
           Helpers.set_environment options
           Helpers.set_rlimits options
           
-          Kernel.exec *([binary] + args)
+          Kernel.exec(*([binary] + args))
         end
       end
       

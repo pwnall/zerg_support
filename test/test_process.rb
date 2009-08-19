@@ -10,7 +10,9 @@ class TestProcess < Test::Unit::TestCase
   end
   
   def teardown
-    @pid_files.each { |f| File.delete f rescue nil } if @pid_files
+    if defined?(@pid_files)
+      @pid_files.each { |f| File.delete f rescue nil }
+    end
     super
   end
   

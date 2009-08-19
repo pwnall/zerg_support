@@ -6,6 +6,7 @@ module FrameProtocol
   # Called when data is available from the TCP stream.
   def received_bytes(data)
     @frame_protocol_varsize ||= ''
+    @frame_protocol_buffer = nil unless defined?(@frame_protocol_buffer)
 
     i = 0
     loop do
