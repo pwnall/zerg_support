@@ -14,9 +14,9 @@ Echoe.new('zerg_support') do |p|
   p.need_zip = !Gem.win_platform?
   p.rdoc_pattern = /^(lib|bin|tasks|ext)|^BUILD|^README|^CHANGELOG|^TODO|^LICENSE|^COPYING$/
   
-  p.development_dependencies = ["echoe >=3.0.2",
-                                "event_machine >=0.12.2",
-                                "flexmock >=0.8.3",
+  p.development_dependencies = ['echoe >=3.0.2',
+                                'event_machine >=0.12.2',
+                                'flexmock >=0.8.3',
                                ]
 end
 
