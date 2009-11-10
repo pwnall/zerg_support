@@ -98,6 +98,9 @@ else
           
           Kernel.exec(*([binary] + args))
         end
+        
+        # Get rid of zombies.
+        Process.detach child_pid
       end
       
       return child_pid

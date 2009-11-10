@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{zerg_support}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Victor Costan"]
-  s.date = %q{2009-08-19}
+  s.date = %q{2009-11-09}
   s.description = %q{Support libraries used by Zergling.Net deployment code.}
   s.email = %q{victor@zergling.net}
   s.extra_rdoc_files = ["CHANGELOG", "lib/zerg_support/event_machine/connection_mocks.rb", "lib/zerg_support/event_machine/protocol_adapter.rb", "lib/zerg_support/gems.rb", "lib/zerg_support/open_ssh.rb", "lib/zerg_support/process.rb", "lib/zerg_support/protocols/frame_protocol.rb", "lib/zerg_support/protocols/object_protocol.rb", "lib/zerg_support/socket_factory.rb", "lib/zerg_support/sockets/protocol_adapter.rb", "lib/zerg_support/sockets/socket_mocks.rb", "lib/zerg_support/spawn.rb", "lib/zerg_support.rb", "LICENSE", "README"]
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = %q{zerglings}
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Support libraries used by Zergling.Net deployment code.}
-  s.test_files = ["test/test_connection_mocks.rb", "test/test_frame_protocol.rb", "test/test_gems.rb", "test/test_object_protocol.rb", "test/test_open_ssh.rb", "test/test_process.rb", "test/test_socket_factory.rb", "test/test_spawn.rb"]
+  s.test_files = ["test/test_spawn.rb", "test/test_socket_factory.rb", "test/test_gems.rb", "test/test_open_ssh.rb", "test/test_object_protocol.rb", "test/test_frame_protocol.rb", "test/test_process.rb", "test/test_connection_mocks.rb"]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION

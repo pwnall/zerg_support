@@ -10,8 +10,8 @@ Echoe.new('zerg_support') do |p|
   p.summary = 'Support libraries used by Zergling.Net deployment code.'
   p.url = 'http://github.com/costan/zerg_support'
   
-  p.need_tar_gz = !Platform.windows?
-  p.need_zip = !Platform.windows?
+  p.need_tar_gz = !Gem.win_platform?
+  p.need_zip = !Gem.win_platform?
   p.rdoc_pattern = /^(lib|bin|tasks|ext)|^BUILD|^README|^CHANGELOG|^TODO|^LICENSE|^COPYING$/
   
   p.development_dependencies = ["echoe >=3.0.2",
