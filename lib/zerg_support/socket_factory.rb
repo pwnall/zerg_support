@@ -101,7 +101,6 @@ module SocketFactory
     else
       # No lingering sockets.
       socket.setsockopt Socket::SOL_SOCKET, Socket::SO_LINGER, [1, 0].pack('ii')
-      sugar_socket_close socket
     end
   end
 
@@ -114,6 +113,7 @@ module SocketFactory
       sock, addr = super
       Zerg::Support::SocketFactory.set_options sock,
                                                @zerg_support_factory_options
+      Zerg::Support::SocketFactory.sugar_socket_close sock
       return sock, addr
     end
   end
@@ -126,13 +126,16 @@ module SocketFactory
     end
   end
 
-  # Sugar-coat the socket's close() call with the proper way to close a socket.
+  # Sugar-coat the socket's close() call with a better way to close a socket.
   def self.sugar_socket_close(socket)
     def socket.close
-      shutdown rescue nil
-      recv 1 rescue nil
+      begin
+        shutdown Socket::SHUT_WR
+        loop { break if recv(65536).empty? }
+      rescue SystemCallError
+      end
       super
-    end    
+    end
   end
   
   # Binds a socket to an address based on the options.
@@ -181,7 +184,10 @@ module SocketFactory
     addr_infos.each do |addr_info|
       socket = new_outbound_socket_with_addr_info addr_info
       set_options socket, options      
-      return socket if connect_with_addr_info socket, addr_info
+      if connect_with_addr_info socket, addr_info
+        sugar_socket_close socket
+        return socket
+      end
       socket.close rescue nil
     end
     nil

@@ -55,7 +55,7 @@ class SocketFactoryTest < Test::Unit::TestCase
   
   def _test_connection(server_options, client_options = nil)
     client_options ||= server_options
-    test_port = 31996
+    test_port = 31993
     
     cli_gold = { :request_type => 1, :request_name => "moo",
                  :blob => 'abc' * 43000 }
@@ -65,7 +65,7 @@ class SocketFactoryTest < Test::Unit::TestCase
     
     # Server thread.
     server = SF.socket({:in_addr => ":#{test_port}"}.merge server_options)
-    Thread.new do
+    server_thread = Thread.new do
       server.listen
       serv_client, client_addrinfo = server.accept
       serv_client.extend OPAdapter
@@ -81,6 +81,7 @@ class SocketFactoryTest < Test::Unit::TestCase
     client.send_object cli_gold
     srv_hash = client.recv_object
     client.close
+    server_thread.join
     server.close
     
     # Checks
@@ -89,8 +90,9 @@ class SocketFactoryTest < Test::Unit::TestCase
   end
   
   def test_connection  
-    _test_connection({:no_delay => true})
     _test_connection({:reuse_addr => true})
+    Kernel.sleep 1.1  # Wait for the lingering socket to flush.
+    _test_connection({:reuse_addr => true, :no_delay => true})
     
     # TODO(costan): fix UDP at some point
   end

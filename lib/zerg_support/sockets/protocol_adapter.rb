@@ -24,8 +24,13 @@ module ProtocolAdapter
       define_method :"recv_#{object_name}" do
         @zerg_protocol_adapter_state ||= state_class.new self
         while @zerg_protocol_adapter_state.recv_object_buffer.empty?
-          data = recv 65536
-          return nil if data.length == 0  # Other side closed socket.
+          begin
+            data = recv 65536
+          rescue SystemCallError  # The other side closed the socket forcibly.
+            break
+          end
+          break if data.empty?  # The other side closed the socket.
+
           @zerg_protocol_adapter_state.received_bytes data
         end
         @zerg_protocol_adapter_state.recv_object_buffer.shift
