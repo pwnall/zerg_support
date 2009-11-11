@@ -10,7 +10,7 @@ module FrameProtocol
 
     i = 0
     loop do
-      while @frame_protocol_buffer.nil? and i < data.size
+      while @frame_protocol_buffer.nil? and i < data.length
         @frame_protocol_varsize << data[i]
         if (data[i] & 0x80) == 0
           @frame_protocol_bytes_left =
@@ -21,15 +21,16 @@ module FrameProtocol
       end
 
       return if @frame_protocol_buffer.nil?
-      break if @frame_protocol_bytes_left > data.size - i
+      break if @frame_protocol_bytes_left > data.length - i
 
-      received_frame @frame_protocol_buffer + data[i, @frame_protocol_bytes_left]
+      received_frame @frame_protocol_buffer +
+                     data[i, @frame_protocol_bytes_left]
       @frame_protocol_varsize, @frame_protocol_buffer = '', nil
       i += @frame_protocol_bytes_left
     end
 
     @frame_protocol_buffer << data[i..-1]
-    @frame_protocol_bytes_left -= data.size-i
+    @frame_protocol_bytes_left -= data.length - i
   end
   
   # Override to process incoming frames.

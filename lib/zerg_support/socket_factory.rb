@@ -94,6 +94,15 @@ module SocketFactory
         BasicSocket.do_not_reverse_lookup = true
       end
     end
+    
+    if options[:linger]
+      socket.setsockopt Socket::SOL_SOCKET, Socket::SO_LINGER,
+                        [1, options[:linger]].pack('ii')
+    else
+      # No lingering sockets.
+      socket.setsockopt Socket::SOL_SOCKET, Socket::SO_LINGER, [1, 0].pack('ii')
+      sugar_socket_close socket
+    end
   end
 
   # Hacks a socket's accept method so that new sockets have the given flags set.
@@ -115,6 +124,15 @@ module SocketFactory
       args = [1000] if args.empty?
       super(*args)
     end
+  end
+
+  # Sugar-coat the socket's close() call with the proper way to close a socket.
+  def self.sugar_socket_close(socket)
+    def socket.close
+      shutdown rescue nil
+      recv 1 rescue nil
+      super
+    end    
   end
   
   # Binds a socket to an address based on the options.

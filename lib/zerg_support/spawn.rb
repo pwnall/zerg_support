@@ -98,9 +98,9 @@ else
           
           Kernel.exec(*([binary] + args))
         end
-        
         # Get rid of zombies.
-        Process.detach child_pid
+        Process.detach child_pid if options[:pgroup]
+
       end
       
       return child_pid

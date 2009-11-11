@@ -23,7 +23,7 @@ module ProtocolAdapter
       # Receives an object from a socket.
       define_method :"recv_#{object_name}" do
         @zerg_protocol_adapter_state ||= state_class.new self
-        while @zerg_protocol_adapter_state.recv_object_buffer.length == 0
+        while @zerg_protocol_adapter_state.recv_object_buffer.empty?
           data = recv 65536
           return nil if data.length == 0  # Other side closed socket.
           @zerg_protocol_adapter_state.received_bytes data
@@ -51,7 +51,14 @@ module ProtocolAdapter
 
     # Called by the protocol when an entire object is available.
     def send_bytes(data)
-      @target.send data, 0
+      # NOTE: need to chunk the data so kernel buffers don't overflow.
+      #       Found out about this the hard way -- sending 150k in one call
+      #       drops data.      
+      i = 0
+      while i < data.length      
+        @target.send data[i, 65536], 0
+        i += 65536
+      end
     end
   end
 end

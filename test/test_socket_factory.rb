@@ -10,11 +10,14 @@ class SocketFactoryTest < Test::Unit::TestCase
   OPAdapter = Zerg::Support::Sockets::ProtocolAdapter.adapter_module OP
   
   def setup
+    super
+    @thread_abort = Thread.abort_on_exception
     Thread.abort_on_exception = true
   end
 
   def teardown
-    
+    Thread.abort_on_exception = @thread_abort
+    super    
   end
   
   def test_host_from_address
@@ -54,21 +57,21 @@ class SocketFactoryTest < Test::Unit::TestCase
     client_options ||= server_options
     test_port = 31996
     
-    cli_gold = { :request_type => 1, :request_name => "moo" }
-    srv_gold = { :response_type => 2, :response_value => [true, 314] }
+    cli_gold = { :request_type => 1, :request_name => "moo",
+                 :blob => 'abc' * 43000 }
+    srv_gold = { :response_type => 2, :response_value => [true, 314],
+                 :rblob => 'xyz' * 41000 }
     cli_hash = nil
     
     # Server thread.
+    server = SF.socket({:in_addr => ":#{test_port}"}.merge server_options)
     Thread.new do
-      server = SF.socket({:in_addr => ":#{test_port}"}.merge server_options)
       server.listen
       serv_client, client_addrinfo = server.accept
       serv_client.extend OPAdapter
       cli_hash = serv_client.recv_object
       serv_client.send_object srv_gold
       serv_client.close
-      
-      server.close
     end
     
     # Client.
@@ -78,6 +81,7 @@ class SocketFactoryTest < Test::Unit::TestCase
     client.send_object cli_gold
     srv_hash = client.recv_object
     client.close
+    server.close
     
     # Checks
     assert_equal cli_gold, cli_hash, "Client -> server failed"

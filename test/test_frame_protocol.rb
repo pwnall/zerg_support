@@ -101,7 +101,8 @@ module FrameProtocolTestMethods
   def test_natural_encoding
     table = [[0, "\0"], [1, "\x01"], [127, "\x7f"], [128, "\x80\x01"],
              [65535, "\xff\xff\x03"], [0xf0f0f0, "\xf0\xe1\xc3\x07"],
-             [0xaa55aa55aa55, "\xd5\xd4\xd6\xd2\xda\xca\x2a"]]
+             [0xaa55aa55aa55, "\xd5\xd4\xd6\xd2\xda\xca\x2a"],
+             [148296, "\310\206\t"]]
     table.each do |entry|
       assert_equal entry.last, FP.encode_natural(entry.first) 
       assert_equal entry.first, FP.decode_natural(entry.last) 
