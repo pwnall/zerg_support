@@ -1,6 +1,6 @@
 #:nodoc: namespace
 module Zerg::Support::Protocols
-  
+
 # Protocol for sending and receiving discrete-sized frames over TCP streams.
 module FrameProtocol
   # Called when data is available from the TCP stream.
@@ -12,7 +12,7 @@ module FrameProtocol
     loop do
       while @frame_protocol_buffer.nil? and i < data.length
         @frame_protocol_varsize << data[i]
-        if (data[i] & 0x80) == 0
+        if (data[i].ord & 0x80) == 0
           @frame_protocol_bytes_left =
               FrameProtocol.decode_natural @frame_protocol_varsize
           @frame_protocol_buffer = ''
@@ -32,7 +32,7 @@ module FrameProtocol
     @frame_protocol_buffer << data[i..-1]
     @frame_protocol_bytes_left -= data.length - i
   end
-  
+
   # Override to process incoming frames.
   def received_frame(frame_data); end
 
@@ -40,7 +40,7 @@ module FrameProtocol
   def send_frame(frame_data)
     send_bytes FrameProtocol.encode_frame(frame_data)
   end
-  
+
   # :nodoc: Encodes frame data into data to be sent across a TCP wire.
   def self.encode_frame(frame_data)
     encoded_length = FrameProtocol.encode_natural(frame_data.length)
@@ -57,7 +57,7 @@ module FrameProtocol
     end
     string
   end
-  
+
   #:nodoc: Decodes a natural (non-negative) integer from a string.
   def self.decode_natural(string)
     number = 0
@@ -69,7 +69,7 @@ module FrameProtocol
       multiplier *= 0x80
     end
     return number
-  end  
+  end
 end
 
 end  # namespace Zerg::Support::Protocols

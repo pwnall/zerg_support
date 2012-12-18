@@ -12,7 +12,7 @@ if RUBY_PLATFORM =~ /win/ and RUBY_PLATFORM !~ /darwin/
       # command line processing
       command_line = '"' + binary + '" "' +
           args.map { |a| a.gsub '"', '""' }.join('" "') + '"'
-      
+
       # environment processing
       environment_string = nil
       if options[:env]
@@ -25,7 +25,7 @@ if RUBY_PLATFORM =~ /win/ and RUBY_PLATFORM !~ /darwin/
             map { |k| "#{k}=#{environment[k]}" }.join "\0"
         environment_string << "\0"
       end
-      
+
       # redirection processing
       startup_info = {}
       files = {}
@@ -47,7 +47,7 @@ if RUBY_PLATFORM =~ /win/ and RUBY_PLATFORM !~ /darwin/
         end
       end
       deferred_opens.each { |d| d.call }
-      
+
       # process leader
       creation_flags = 0
       if options[:pgroup]
@@ -58,18 +58,18 @@ if RUBY_PLATFORM =~ /win/ and RUBY_PLATFORM !~ /darwin/
           creation_flags |= Process::CREATE_NEW_PROCESS_GROUP
         end
       end
-      
+
       info = Process.create :command_line => command_line,
                             :cwd => options[:chdir] || Dir.pwd,
                             :environment => environment_string,
                             :creation_flags => creation_flags,
-                            :startup_info => startup_info                            
+                            :startup_info => startup_info
       files.each { |name, io| io.close }
-      
+
       return info[:process_id]
     end
   end
-  
+
 else
 
   #:nodoc:
@@ -80,32 +80,34 @@ else
     def self.spawn(binary, args = [], options = {})
       if Kernel.respond_to? :spawn
         # ruby1.9+: spawn!
-        options = options.dup
-        env = options.delete(:env)
-        Kernel.spawn(*([env, binary] + args + [options]))
+        if options.has_key? :env
+          options = options.dup
+          env = options.delete(:env)
+          Kernel.spawn(*([env, binary] + args + [options]))
+        else
+          Kernel.spawn(*([binary] + args + [options]))
+        end
       else
         # below 1.9: emulate
-        
+
         # chdir option
         Dir.chdir options[:chdir] if options[:chdir]
-        
-        child_pid = fork do
+
+        child_pid = Process.fork do
           Helpers.do_redirects options
-          Helpers.close_fds options          
-          Helpers.set_process_group options          
+          Helpers.close_fds options
+          Helpers.set_process_group options
           Helpers.set_environment options
           Helpers.set_rlimits options
-          
+
           Kernel.exec(*([binary] + args))
         end
         # Get rid of zombies.
         Process.detach child_pid if options[:pgroup]
-
+        child_pid
       end
-      
-      return child_pid
     end
-  end  
+  end
 end
 
 # Helpers for spawning processes.
@@ -113,17 +115,17 @@ module Zerg::Support::Process::Helpers
   # Closes all open file descriptors except for stdin/stdout/stderr
   def self.close_fds(options)
     return if options[:close_others] == false
-    
+
     ObjectSpace.each_object(IO) do |io|
       next if [STDIN, STDOUT, STDERR].include? io
-      
+
       begin
         io.close unless io.closed?
       rescue Exception
       end
     end
   end
-  
+
   # Sets process limits (rlimits) according to the given options. The options
   # follow the convention of Kernel.spawn in ruby1.9
   def self.set_rlimits(options)
@@ -135,33 +137,33 @@ module Zerg::Support::Process::Helpers
         Process.setrlimit rconst, v.first, v.last
       else
         Process.setrlimit rconst, v
-      end              
-    end    
+      end
+    end
   end
-  
+
   # Sets the process' group according to the given options. The options
   # follow the convention of Kernel.spawn in ruby1.9
   def self.set_process_group(options)
     return unless options[:pgroup]
-    
+
     if options[:pgroup].kind_of? Numeric and options[:pgroup] > 0
       Process.setpgid 0, options[:pgroup]
     else
       Process.setsid
     end
   end
-  
+
   # Sets the process' environment according to the given options. The options
   # follow the convention of Kernel.spawn in ruby1.9
   def self.set_environment(options)
     return unless options[:env]
-    
+
     ENV.clear if options[:unsetenv_others]
     options[:env].each do |key, value|
       ENV[key] = value
     end
   end
-  
+
   # Performs IO redirections according to the given options. The options
   # follow the convention of Kernel.spawn in ruby1.9
   def self.do_redirects(options)

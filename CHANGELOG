@@ -1,3 +1,5 @@
+v0.1.6. Fixed most issues on Ruby 1.9.
+
 v0.1.5. A second take on the SocketFactory issues.
 
 v0.1.4. SocketFactory issues: no lingering, proper closing.
